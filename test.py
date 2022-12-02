@@ -12,5 +12,8 @@ payload = {
     "endDate": "12-02-2022"
 }
 
-response = requests.post('https://edge.pse.com.ph/common/DisclosureCht.ax', json=payload, headers=headers)
-print(response.json())
+# response = requests.post('https://edge.pse.com.ph/common/DisclosureCht.ax', json=payload, headers=headers)
+# print(response.json())
+
+companyList = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax')
+print(companyList.text)
