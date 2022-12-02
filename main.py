@@ -11,3 +11,12 @@ import requests
 #
 # # response = requests.get('https://phisix-api4.appspot.com/stocks/BDO.2021-01-01.json')
 # # print(response)
+
+payload = {
+    "cmpy_id": "233",
+    "security_id": "140",
+    "startDate": "12-02-2021",
+    "endDate": "12-02-2022"
+}
+response = requests.post('https://edge.pse.com.ph/common/DisclosureCht.ax', payload)
+print(response)
