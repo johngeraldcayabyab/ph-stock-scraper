@@ -15,5 +15,8 @@ payload = {
 # response = requests.post('https://edge.pse.com.ph/common/DisclosureCht.ax', json=payload, headers=headers)
 # print(response.json())
 
+# cmDetail('13','234')
+# cmpy_id = 13
+# security_id = 140
 companyList = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax')
 print(companyList.text)
