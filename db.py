@@ -74,4 +74,4 @@ def get_total_pages():
         if page.name == 'span':
             total_pages += 1
 
-    print(total_pages)
+    return total_pages
