@@ -17,6 +17,7 @@ is_db_exist = False
 for database in cursor:
     if "ph_stock_scraper" in database:
         is_db_exist = True
+        break
 
 if is_db_exist:
     connection = mysql.connector.connect(
@@ -25,25 +26,26 @@ if is_db_exist:
         password="",
         database="ph_stock_scraper"
     )
+    cursor = connection.cursor()
+    cursor.execute("DROP DATABASE ph_stock_scraper")
 
-else:
-    cursor = connection.cursor()
-    cursor.execute("CREATE DATABASE ph_stock_scraper")
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="ph_stock_scraper"
-    )
-    cursor = connection.cursor()
-    cursor.execute("CREATE TABLE sectors (id INT AUTO_INCREMENT PRIMARY KEY, cd_id VARCHAR(255), cd_name VARCHAR(255))")
-    cursor.execute(
-        "CREATE TABLE companies ("
-        " id INT AUTO_INCREMENT PRIMARY KEY,"
-        " cmpy_id INT, security_id INT,"
-        " name VARCHAR(255),"
-        " symbol VARCHAR(255)"
-        ")")
+cursor = connection.cursor()
+cursor.execute("CREATE DATABASE ph_stock_scraper")
+connection = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="ph_stock_scraper"
+)
+cursor = connection.cursor()
+cursor.execute("CREATE TABLE sectors (id INT AUTO_INCREMENT PRIMARY KEY, cd_id VARCHAR(255), cd_name VARCHAR(255))")
+cursor.execute(
+    "CREATE TABLE companies ("
+    " id INT AUTO_INCREMENT PRIMARY KEY,"
+    " cmpy_id INT, security_id INT,"
+    " name VARCHAR(255),"
+    " symbol VARCHAR(255)"
+    ")")
 
 headers = {
     'Content-type': 'application/json',
