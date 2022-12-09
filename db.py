@@ -18,7 +18,16 @@ for database in cursor:
     if "ph_stock_scraper" in database:
         is_db_exist = True
 
-if is_db_exist != True:
+if is_db_exist:
+    connection = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="ph_stock_scraper"
+    )
+
+else:
+    cursor = connection.cursor()
     cursor.execute("CREATE DATABASE ph_stock_scraper")
     connection = mysql.connector.connect(
         host="localhost",
@@ -35,14 +44,6 @@ if is_db_exist != True:
         " name VARCHAR(255),"
         " symbol VARCHAR(255)"
         ")")
-else:
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="ph_stock_scraper"
-    )
-    cursor = connection.cursor()
 
 headers = {
     'Content-type': 'application/json',
