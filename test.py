@@ -20,6 +20,11 @@ payload = {
 # cmpy_id = 13
 # security_id = 140
 companyList = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', json={
+    'pageNo': 2,  # total pages range
+    'sortType': '',
+    'dateSortType': 'DESC',
+    'cmpySortType': 'ASC',
+    'symbolSortType': 'ASC',
     'companyId': '',
     'keyword': '',
     'sector': 'ALL',
@@ -28,16 +33,34 @@ companyList = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax'
 
 soup = BeautifulSoup(companyList.text, 'html.parser')
 
-pages = soup.find_all("div", class_="paging")[0].contents
+tbody = soup.find_all("tbody")
 
-total_pages = 0
+for body in tbody:
+    rows = body.find_all("tr")
+    for row in rows:
+        columns = row.find_all("td")
+        cm_detail = columns[0].find('a')['onclick'].replace('cmDetail(', '').replace(');return false;', '').split(',')
+        name = columns[0].find('a').contents[0]
+        symbol = columns[1].find('a').contents[0]
+        cmpy_id = cm_detail[0].replace("'", '')
+        security_id = cm_detail[1].replace("'", '')
 
-for page in pages:
-    if page.name == 'span':
-        total_pages += 1
+        print(name, symbol, cmpy_id, security_id)
 
+        # for cm in cm_detail:
+        #     cmpy_id = cm[0]
+        #     security_id = cm[1]
 
-print(total_pages)
+        # print(cm_detail)
+        # name = columns[0].content
+        # print(columns[0].find('a').contents[0])
+
+    # td = body
+
+    # for td in
+    # print(tr)
+
+# print(pages)
 
 # print(soup.find_all("div", class_="paging")[0].contents[0])
 
