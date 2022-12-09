@@ -32,7 +32,6 @@ companyList = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax'
 })
 
 soup = BeautifulSoup(companyList.text, 'html.parser')
-
 tbody = soup.find_all("tbody")
 
 for body in tbody:

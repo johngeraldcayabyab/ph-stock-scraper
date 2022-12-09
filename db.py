@@ -12,13 +12,13 @@ cursor = connection.cursor()
 
 cursor.execute("SHOW DATABASES")
 
-isDbExist = False
+is_db_exist = False
 
 for database in cursor:
     if "ph_stock_scraper" in database:
-        isDbExist = True
+        is_db_exist = True
 
-if isDbExist != True:
+if is_db_exist != True:
     cursor.execute("CREATE DATABASE ph_stock_scraper")
     connection = mysql.connector.connect(
         host="localhost",
@@ -49,14 +49,14 @@ headers = {
     'Accept': 'text/plain'
 }
 
-sectors = requests.post('https://edge.pse.com.ph/common/chgSector.ax', json={"idxId": ""}, headers=headers)
 
-for sector in sectors.json():
-    sql = "INSERT INTO sectors (cd_id, cd_name) VALUES (%s, %s)"
-    val = (sector['cdId'], sector['cdNm'])
-    cursor.execute(sql, val)
+def insert_sectors():
+    sectors = requests.post('https://edge.pse.com.ph/common/chgSector.ax', json={"idxId": ""}, headers=headers)
 
-connection.commit()
+    for sector in sectors.json():
+        sql = "INSERT INTO sectors (cd_id, cd_name) VALUES (%s, %s)"
+        val = (sector['cdId'], sector['cdNm'])
+        cursor.execute(sql, val)
 
 
 def get_total_pages():
@@ -75,3 +75,40 @@ def get_total_pages():
             total_pages += 1
 
     return total_pages
+
+
+def insert_companies():
+    for i in range(get_total_pages()):
+        companies = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', json={
+            'pageNo': i,
+            'sortType': '',
+            'dateSortType': 'DESC',
+            'cmpySortType': 'ASC',
+            'symbolSortType': 'ASC',
+            'companyId': '',
+            'keyword': '',
+            'sector': 'ALL',
+            'subsector': 'ALL'
+        })
+        soup = BeautifulSoup(companies.text, 'html.parser')
+        t_body = soup.find_all("tbody")
+        for body in t_body:
+            rows = body.find_all("tr")
+            for row in rows:
+                columns = row.find_all("td")
+                cm_detail = columns[0].find('a')['onclick'].replace('cmDetail(', '').replace(');return false;',
+                                                                                             '').split(
+                    ',')
+                name = columns[0].find('a').contents[0]
+                symbol = columns[1].find('a').contents[0]
+                cmpy_id = cm_detail[0].replace("'", '')
+                security_id = cm_detail[1].replace("'", '')
+
+                sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id) VALUES (%s, %s, %s, %s)"
+                val = (name, symbol, cmpy_id, security_id)
+                cursor.execute(sql, val)
+
+
+insert_sectors()
+insert_companies()
+connection.commit()
