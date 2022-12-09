@@ -1,5 +1,6 @@
 import mysql.connector
 import requests
+import datetime
 from bs4 import BeautifulSoup
 
 connection = mysql.connector.connect(
@@ -44,7 +45,8 @@ cursor.execute(
     " id INT AUTO_INCREMENT PRIMARY KEY,"
     " cmpy_id INT, security_id INT,"
     " name VARCHAR(255),"
-    " symbol VARCHAR(255)"
+    " symbol VARCHAR(255),"
+    " listing_date DATETIME"
     ")")
 
 headers = {
@@ -106,9 +108,12 @@ def insert_companies():
                 symbol = columns[1].find('a').contents[0]
                 cmpy_id = cm_detail[0].replace("'", '')
                 security_id = cm_detail[1].replace("'", '')
+                listing_date = columns[4].contents[0]
+                f = '%b %d, %Y'
+                listing_date = datetime.datetime.strptime(listing_date, f)
 
-                sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id) VALUES (%s, %s, %s, %s)"
-                val = (name, symbol, cmpy_id, security_id)
+                sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date) VALUES (%s, %s, %s, %s, %s)"
+                val = (name, symbol, cmpy_id, security_id, listing_date)
                 cursor.execute(sql, val)
 
 
