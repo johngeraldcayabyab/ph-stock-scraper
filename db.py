@@ -65,7 +65,7 @@ cursor.execute(
     " close DECIMAL(13,4),"
     " high DECIMAL(13,4),"
     " low DECIMAL(13,4),"
-    " value DECIMAL(13,4),"
+    " volume DECIMAL(13,4),"
     " chart_date DATETIME,"
     " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
     ")")
