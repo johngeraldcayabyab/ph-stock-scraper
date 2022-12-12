@@ -18,3 +18,11 @@
 <li>Mysql</li>
 <li>Redis</li>
 </ul>
+
+
+<h3>Data type for money</h3>
+<ul>
+<li>If your application needs to handle money values up to a trillion then this should work: 13,2 If you need to comply with GAAP (Generally Accepted Accounting Principles) then use: 13,4</li>
+<li>Usually you should sum your money values at 13,4 before rounding of the output to 13,2.</li>
+<li>https://stackoverflow.com/questions/13030368/best-data-type-to-store-money-values-in-mysql</li>
+</ul>

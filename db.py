@@ -43,7 +43,8 @@ cursor.execute(
     "CREATE TABLE sectors ("
     " id INT AUTO_INCREMENT PRIMARY KEY,"
     " cd_id VARCHAR(255),"
-    " cd_name VARCHAR(255)"
+    " cd_name VARCHAR(255),"
+    " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
     ")")
 
 cursor.execute(
@@ -53,18 +54,20 @@ cursor.execute(
     " security_id INT,"
     " name VARCHAR(255),"
     " symbol VARCHAR(255),"
-    " listing_date DATETIME"
+    " listing_date DATETIME,"
+    " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
     ")")
 
 cursor.execute(
     "CREATE TABLE chart_data ("
     " id INT AUTO_INCREMENT PRIMARY KEY,"
-    " open INT,"
-    " close INT,"
-    " high INT,"
-    " low INT,"
-    " value VARCHAR(255),"
-    " chart_date DATETIME"
+    " open DECIMAL(13,4),"
+    " close DECIMAL(13,4),"
+    " high DECIMAL(13,4),"
+    " low DECIMAL(13,4),"
+    " value DECIMAL(13,4),"
+    " chart_date DATETIME,"
+    " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
     ")")
 
 headers = {
