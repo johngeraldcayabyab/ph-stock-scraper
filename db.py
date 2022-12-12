@@ -39,14 +39,32 @@ connection = mysql.connector.connect(
     database="ph_stock_scraper"
 )
 cursor = connection.cursor()
-cursor.execute("CREATE TABLE sectors (id INT AUTO_INCREMENT PRIMARY KEY, cd_id VARCHAR(255), cd_name VARCHAR(255))")
+cursor.execute(
+    "CREATE TABLE sectors ("
+    " id INT AUTO_INCREMENT PRIMARY KEY,"
+    " cd_id VARCHAR(255),"
+    " cd_name VARCHAR(255)"
+    ")")
+
 cursor.execute(
     "CREATE TABLE companies ("
     " id INT AUTO_INCREMENT PRIMARY KEY,"
-    " cmpy_id INT, security_id INT,"
+    " cmpy_id INT,"
+    " security_id INT,"
     " name VARCHAR(255),"
     " symbol VARCHAR(255),"
     " listing_date DATETIME"
+    ")")
+
+cursor.execute(
+    "CREATE TABLE chart_data ("
+    " id INT AUTO_INCREMENT PRIMARY KEY,"
+    " open INT,"
+    " close INT,"
+    " high INT,"
+    " low INT,"
+    " value VARCHAR(255),"
+    " chart_date DATETIME"
     ")")
 
 headers = {
@@ -120,3 +138,8 @@ def insert_companies():
 insert_sectors()
 insert_companies()
 connection.commit()
+
+print('initialization done')
+
+
+
