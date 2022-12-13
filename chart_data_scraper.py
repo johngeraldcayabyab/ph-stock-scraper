@@ -1,13 +1,22 @@
+import os
+from dotenv import load_dotenv
 import mysql.connector
 import requests
 import datetime
 from datetime import date
 
+load_dotenv()
+
+DB_HOST = os.getenv('DB_HOST')
+DB_DATABASE = os.getenv('DB_DATABASE')
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+
 connection = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="ph_stock_scraper"
+    host=DB_HOST,
+    database=DB_DATABASE,
+    user=DB_USERNAME,
+    password=DB_PASSWORD,
 )
 
 cursor = connection.cursor()
