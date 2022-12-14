@@ -1,6 +1,8 @@
 import pandas as pd
 from sqlalchemy import create_engine
 import matplotlib.pyplot as plt
+import numpy
+from scipy import stats
 
 db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
 db_connection = create_engine(db_connection_str)
@@ -25,29 +27,47 @@ df.dropna(inplace=True)
 # print(type(df))
 #
 # this should be the code that would draw lines on when all the things is correct below
+count = 0
 lines = []
+start_end = []
 
-for index, row in df.iterrows():
+
+def is_close_above_ma(row):
     close = float(row['close'])
     sma_200 = float(row['sma_200'])
     sma_150 = float(row['sma_150'])
     sma_50 = float(row['sma_50'])
-    # row['average_above'] = False
-    # line = {'point_1': 0, 'point_2': 0}
-    # line = []
     if close > sma_200 and close > sma_150 and close > sma_50:
-        lines.append(row['close'])
-        # print(1)
-        # line['point_1'] = row['close']
-        # if row['average_above']:
-        #
-        # row['average_above'] = True
-        # print(close, row['chart_date'])
+        return True
+    return False
 
 
-    # print(row)
-print(lines)
+for index, row in df.iterrows():
+    if is_close_above_ma(row):
+        row['average_above'] = True
+        count = 1
+        start_end.append({
+            'close': row['close'],
+            'chart_date': row['chart_date']
+        })
+    if count and row['average_above'] == False:
+        count = 0
+        lines.append(start_end)
+        start_end = []
 
+total_days = []
+# print(row)
+for line in lines:
+    total_days.append(len(line))
+    # print(len(line))
+    # print(line)
+
+print(numpy.average(total_days))
+print(stats.mode(total_days))
+print(total_days)
+print(len(total_days))
+
+# print(lines)
 
 plt.plot(df['close'], 'k-', label='Original')
 plt.plot(df['sma_50'], 'g-', label='50 Day MA')
