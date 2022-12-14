@@ -2,6 +2,7 @@ import requests
 import datetime
 from datetime import date
 from db import test_connection
+from bs4 import BeautifulSoup
 
 
 def scrap_and_insert_chart_data(company_id, cmpy_id, security_id, listing_date):
@@ -30,6 +31,61 @@ def scrap_and_insert_chart_data(company_id, cmpy_id, security_id, listing_date):
         val = (open_price, close, high, low, volume, chart_date, company_id)
         cursor.execute(sql, val)
     connection.commit()
+
+
+def get_total_pages():
+    company_list = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', json={
+        'companyId': '',
+        'keyword': '',
+        'sector': 'ALL',
+        'subsector': 'ALL'
+    })
+    soup = BeautifulSoup(company_list.text, 'html.parser')
+    pages = soup.find_all("div", class_="paging")[0].contents
+    total_pages = 0
+    for page in pages:
+        if page.name == 'span':
+            total_pages += 1
+    return total_pages
+
+
+def insert_companies():
+    connection = test_connection()
+    cursor = connection.cursor()
+    for i in range(get_total_pages()):
+        companies = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', json={
+            'pageNo': i,
+            'sortType': '',
+            'dateSortType': 'DESC',
+            'cmpySortType': 'ASC',
+            'symbolSortType': 'ASC',
+            'companyId': '',
+            'keyword': '',
+            'sector': 'ALL',
+            'subsector': 'ALL'
+        })
+        soup = BeautifulSoup(companies.text, 'html.parser')
+        t_body = soup.find_all("tbody")
+        for body in t_body:
+            rows = body.find_all("tr")
+            for row in rows:
+                columns = row.find_all("td")
+                cm_detail = columns[0].find('a')['onclick'].replace('cmDetail(', '').replace(');return false;',
+                                                                                             '').split(
+                    ',')
+                name = columns[0].find('a').contents[0]
+                symbol = columns[1].find('a').contents[0]
+                cmpy_id = cm_detail[0].replace("'", '')
+                security_id = cm_detail[1].replace("'", '')
+                listing_date = columns[4].contents[0]
+                f = '%b %d, %Y'
+                listing_date = datetime.datetime.strptime(listing_date, f)
+                sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date) VALUES (%s, %s, %s, %s, %s)"
+                val = (name, symbol, cmpy_id, security_id, listing_date)
+                cursor.execute(sql, val)
+    connection.commit()
+
+
 
 # print(companies)
 
