@@ -51,6 +51,8 @@ def create_tables():
         " low DECIMAL(13,4),"
         " volume DECIMAL(13,4),"
         " chart_date DATETIME,"
+        " company_id INT,"
+        " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
         " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
         ")")
     connection.commit()

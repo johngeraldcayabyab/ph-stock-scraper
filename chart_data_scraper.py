@@ -1,44 +1,24 @@
-import os
-from dotenv import load_dotenv
-import mysql.connector
 import requests
 import datetime
 from datetime import date
+from db import test_connection
 
-load_dotenv()
 
-DB_HOST = os.getenv('DB_HOST')
-DB_DATABASE = os.getenv('DB_DATABASE')
-DB_USERNAME = os.getenv('DB_USERNAME')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-
-connection = mysql.connector.connect(
-    host=DB_HOST,
-    database=DB_DATABASE,
-    user=DB_USERNAME,
-    password=DB_PASSWORD,
-)
-
-cursor = connection.cursor()
-cursor.execute("SELECT * FROM companies")
-companies = cursor.fetchall()
-
-for company in companies:
-    cmpy_id = company[1]
-    security_id = company[2]
-    listing_date = company[5].strftime("%Y-%m-%d")
+def scrap_and_insert_chart_data(company_id, cmpy_id, security_id, listing_date):
+    end_date = date.today().strftime("%m-%d-%Y")
+    connection = test_connection()
+    cursor = connection.cursor()
     response = requests.post('https://edge.pse.com.ph/common/DisclosureCht.ax', json={
         "cmpy_id": cmpy_id,
         "security_id": security_id,
         "startDate": listing_date,
-        "endDate": date.today()
+        "endDate": end_date
     }, headers={
         'Content-type': 'application/json',
-        'Accept': 'text/plain'
+        'Accept': 'application/json, text/javascript, */*; q=0.01'
     })
-    chartData = response.json()['chartData']
-    for data in chartData:
-        cursor = connection.cursor()
+    chart_data = response.json()['chartData']
+    for data in chart_data:
         f = '%b %d, %Y %H:%M:%S'
         open_price = data['OPEN']
         close = data['CLOSE']
@@ -46,10 +26,10 @@ for company in companies:
         low = data['LOW']
         volume = data['VALUE']
         chart_date = datetime.datetime.strptime(data['CHART_DATE'], f)
-        sql = "INSERT INTO chart_data (open, close, high, low, volume, chart_date) VALUES (%s, %s, %s, %s, %s, %s)"
-        val = (open_price, close, high, low, volume, chart_date)
+        sql = "INSERT INTO chart_data (open, close, high, low, volume, chart_date, company_id) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        val = (open_price, close, high, low, volume, chart_date, company_id)
         cursor.execute(sql, val)
-        connection.commit()
+    connection.commit()
 
 # print(companies)
 
