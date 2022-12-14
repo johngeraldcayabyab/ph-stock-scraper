@@ -33,5 +33,6 @@
 <h3>Testing</h3>
 <ul>
 <li>One of the first goal is to test the average days a stock stays above, 200, 150, 50 MA</li>
+<li>Next step is to make a model that predicts how many days a stock stays above , 200, 150, 50 MA</li>
 <li>Usually you should sum your money values at 13,4 before rounding of the output to 13,2.</li>
 </ul>

@@ -80,16 +80,16 @@ def insert_companies():
                 listing_date = columns[4].contents[0]
                 f = '%b %d, %Y'
                 listing_date = datetime.datetime.strptime(listing_date, f)
-                sql = "SELECT cmpy_id, COUNT(*) FROM companies WHERE cmpy_id = %s GROUP BY cmpy_id"
-                val = (cmpy_id,)
+                # sql = "SELECT cmpy_id, COUNT(*) FROM companies WHERE cmpy_id = %s AND security_id = %s GROUP BY cmpy_id, security_id"
+                # val = (cmpy_id, security_id,)
+                # cursor.execute(sql, val)
+                # cursor.fetchall()
+                # row_count = cursor.rowcount
+                # if row_count == 0:
+                #     print("It Does Not Exist")
+                sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date) VALUES (%s, %s, %s, %s, %s)"
+                val = (name, symbol, cmpy_id, security_id, listing_date)
                 cursor.execute(sql, val)
-                cursor.fetchall()
-                row_count = cursor.rowcount
-                if row_count == 0:
-                    print("It Does Not Exist")
-                    sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date) VALUES (%s, %s, %s, %s, %s)"
-                    val = (name, symbol, cmpy_id, security_id, listing_date)
-                    cursor.execute(sql, val)
 
     connection.commit()
 

@@ -24,5 +24,5 @@ def get_all_chart_data():
         )
 
 
-insert_companies()
+# insert_companies()
 get_all_chart_data()

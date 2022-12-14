@@ -7,7 +7,7 @@ from db import test_connection
 
 
 def initialize_database():
-    connection = test_connection()
+    connection = test_connection(with_db=False)
     cursor = connection.cursor()
     cursor.execute("SHOW DATABASES")
     is_db_exist = False
