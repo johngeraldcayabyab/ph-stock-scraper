@@ -1,12 +1,28 @@
-# Should make a daily scraper to get all companies, download all data if company is new
+from datetime import date
 
-def get_new_companies():
-    cursor.execute(
-        "SELECT Name, COUNT(*) FROM Item_Info WHERE Name = %s GROUP BY Name",
-        (item_name,)
-    )
-    # gets the number of rows affected by the command executed
-    row_count = cursor.rowcount
-    print("number of affected rows: {}".format(row_count))
-    if row_count == 0:
-        print("It Does Not Exist")
+from redis import Redis
+from rq import Queue
+from chart_data_scraper import scrap_and_insert_chart_data, insert_companies
+from db import test_connection
+
+
+def get_all_chart_data():
+    redis_conn = Redis('localhost', 6379)
+    q = Queue(connection=redis_conn)
+    connection = test_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM companies")
+    companies = cursor.fetchall()
+    today = date.today().strftime("%m-%d-%Y")
+    for company in companies:
+        q.enqueue(
+            scrap_and_insert_chart_data,
+            cmpy_id=company[1],
+            security_id=company[2],
+            listing_date=today,
+            company_id=company[0]
+        )
+
+
+insert_companies()
+get_all_chart_data()
