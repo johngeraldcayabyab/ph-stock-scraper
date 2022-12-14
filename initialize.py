@@ -49,7 +49,7 @@ def create_tables():
         " close DECIMAL(13,4),"
         " high DECIMAL(13,4),"
         " low DECIMAL(13,4),"
-        " volume DECIMAL(13,4),"
+        " volume DECIMAL(19,4),"
         " chart_date DATETIME,"
         " company_id INT,"
         " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
