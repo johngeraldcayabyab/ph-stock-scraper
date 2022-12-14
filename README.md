@@ -10,8 +10,6 @@
 <li><a href="https://edge.pse.com.ph">https://edge.pse.com.ph</a></li>
 <li><a href="https://www1.pse.com.ph/stockMarket/home.html">https://www1.pse.com.ph/stockMarket/home.html (Best for getting stock info like when it was listed)</a></li>
 <li><a href="https://ph.investing.com/equities/transasia-oil-historical-data">https://ph.investing.com/equities/transasia-oil-historical-data (Best for historical data download)</a></li>
-<<<<<<< HEAD
-=======
 </ul>
 
 
@@ -28,5 +26,12 @@
 <li>If your application needs to handle money values up to a trillion then this should work: 13,2 If you need to comply with GAAP (Generally Accepted Accounting Principles) then use: 13,4</li>
 <li>Usually you should sum your money values at 13,4 before rounding of the output to 13,2.</li>
 <li>https://stackoverflow.com/questions/13030368/best-data-type-to-store-money-values-in-mysql</li>
->>>>>>> bf2c97fa3304f6984a81d5a6a45ac6ab345bf988
+</ul>
+
+
+
+<h3>Testing</h3>
+<ul>
+<li>One of the first goal is to test the average days a stock stays above, 200, 150, 50 MA</li>
+<li>Usually you should sum your money values at 13,4 before rounding of the output to 13,2.</li>
 </ul>
