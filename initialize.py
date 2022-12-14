@@ -1,27 +1,11 @@
-import os
-from dotenv import load_dotenv
-import mysql.connector
-import requests
 import datetime
+import requests
 from bs4 import BeautifulSoup
+from db import test_connection
 
-load_dotenv()
-
-DB_HOST = os.getenv('DB_HOST')
-DB_DATABASE = os.getenv('DB_DATABASE')
-DB_USERNAME = os.getenv('DB_USERNAME')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-
-connection = mysql.connector.connect(
-    host=DB_HOST,
-    user=DB_USERNAME,
-    password=DB_PASSWORD
-)
-
+connection = test_connection()
 cursor = connection.cursor()
-
 cursor.execute("SHOW DATABASES")
-
 is_db_exist = False
 
 for database in cursor:
@@ -30,23 +14,13 @@ for database in cursor:
         break
 
 if is_db_exist:
-    connection = mysql.connector.connect(
-        host=DB_HOST,
-        database=DB_DATABASE,
-        user=DB_USERNAME,
-        password=DB_PASSWORD,
-    )
+    connection = test_connection()
     cursor = connection.cursor()
     cursor.execute("DROP DATABASE ph_stock_scraper")
 
 cursor = connection.cursor()
 cursor.execute("CREATE DATABASE ph_stock_scraper")
-connection = mysql.connector.connect(
-    host=DB_HOST,
-    database=DB_DATABASE,
-    user=DB_USERNAME,
-    password=DB_PASSWORD,
-)
+connection = test_connection()
 cursor = connection.cursor()
 cursor.execute(
     "CREATE TABLE sectors ("
@@ -147,8 +121,8 @@ def insert_companies():
                 cursor.execute(sql, val)
 
 
-insert_sectors()
-insert_companies()
+# insert_sectors()
+# insert_companies()
 connection.commit()
 
 print('initialization done')
