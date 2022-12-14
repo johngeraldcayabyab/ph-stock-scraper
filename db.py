@@ -17,3 +17,18 @@ def connection():
         user=DB_USERNAME,
         password=DB_PASSWORD,
     )
+
+
+def test_connection(with_db=True):
+    if with_db:
+        return mysql.connector.connect(
+            host=DB_HOST,
+            database=DB_DATABASE,
+            user=DB_USERNAME,
+            password=DB_PASSWORD,
+        )
+    return mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USERNAME,
+        password=DB_PASSWORD
+    )
