@@ -4,7 +4,7 @@ from redis import Redis
 from rq import Queue
 from chart_data_scraper import scrap_and_insert_chart_data, insert_companies
 from db import test_connection
-from stock_calculations import calculate_close_above_200_150_50_MA
+from stock_calculations import minervini_scanner
 
 
 def get_all_chart_data():
@@ -27,4 +27,4 @@ def get_all_chart_data():
 
 # insert_companies()
 # get_all_chart_data()
-calculate_close_above_200_150_50_MA(159, with_chart=True)
+minervini_scanner(159, with_chart=True)

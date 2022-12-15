@@ -15,7 +15,7 @@ def is_close_above_ma(row):
     return False
 
 
-def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
+def minervini_scanner(company_id, with_chart=False):
     db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
     db_connection = create_engine(db_connection_str)
     sql = 'SELECT * FROM chart_data WHERE company_id = {0} ORDER BY chart_date ASC'.format(company_id)
