@@ -51,7 +51,8 @@ def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
             count = 1
             start_end.append({
                 'close': row['close'],
-                'chart_date': row['chart_date']
+                'chart_date': row['chart_date'],
+                'volume': row['volume']
             })
         if count and row['average_above'] == False:
             count = 0
@@ -67,6 +68,12 @@ def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
             y_values = [line[0]['close'], line[-1]['close']]
             plt.plot(x_values, y_values, linestyle="--")
 
+        volumes = []
+        for row in line:
+            volumes.append(row['volume'])
+
+        # print(numpy.average(volumes), len(line))
+
     # print("average days a stock is above the (200,150,50) MA is = ", numpy.average(total_days))
     # print(stats.mode(total_days)[1])
     # print(total_days)
@@ -81,20 +88,15 @@ def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
         plt.ylabel('Price')
         plt.xlabel('Date')
 
-        plt.ylabel('Price')
-        plt.xlabel('Date')
-
         plt.grid(linestyle=':')
 
         plt.fill_between(df['sma_50'].index, 0, df['sma_50'], color='g', alpha=0.1)
         plt.fill_between(df['sma_150'].index, 0, df['sma_150'], color='r', alpha=0.1)
         plt.fill_between(df['sma_200'].index, 0, df['sma_200'], color='b', alpha=0.1)
-
         # plt.bar(df['chart_date'], df['volume'], width=15, color='darkgrey')
-
         plt.legend(loc='upper left')
-
         plt.show()
+
     if len(total_days):
         average_days = numpy.average(total_days)
         mode = stats.mode(total_days, keepdims=False)
