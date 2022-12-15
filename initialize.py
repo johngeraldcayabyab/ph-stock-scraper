@@ -57,6 +57,16 @@ def create_tables():
         " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
         " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
         ")")
+    cursor.execute(
+        "CREATE TABLE average_up_days ("
+        " id INT AUTO_INCREMENT PRIMARY KEY,"
+        " days INT,"
+        " mode INT,"
+        " count INT,"
+        " company_id INT,"
+        " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
+        " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        ")")
     connection.commit()
 
 
