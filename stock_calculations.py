@@ -36,7 +36,25 @@ def minervini_scanner(company_id, with_chart=False):
 
     # removing all the NULL values using
     # dropna() method
+    change = df['close'].diff()
     df.dropna(inplace=True)
+
+    change_up = change.copy()
+    change_down = change.copy()
+    change_up[change_up < 0] = 0
+    change_down[change_down > 0] = 0
+
+    # Verify that we did not make any mistakes
+    change.equals(change_up + change_down)
+
+    # Calculate the rolling average of average up and average down
+    avg_up = change_up.rolling(14).mean()
+    avg_down = change_down.rolling(14).mean().abs()
+
+    rsi = 100 * avg_up / (avg_up + avg_down)
+
+    # Take a look at the 20 oldest datapoints
+    rsi.head(20)
 
     # print(type(df))
     #
