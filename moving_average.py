@@ -59,33 +59,34 @@ total_days = []
 # print(row)
 for line in lines:
     total_days.append(len(line))
-    # print(len(line))
-    # print(line)
+    x_values = [line[0]['chart_date'], line[-1]['chart_date']]
+    y_values = [line[0]['close'], line[-1]['close']]
+    plt.plot(x_values, y_values, linestyle="--")
 
-print(numpy.average(total_days))
-print(stats.mode(total_days))
-print(total_days)
-print(len(total_days))
+# print("average days a stock is above the 200,150,50 MA", numpy.average(total_days))
+# print(stats.mode(total_days))
+# print(total_days)
+# print(len(total_days))
 
 # print(lines)
 
-# plt.plot(df['close'], 'k-', label='Original')
-# plt.plot(df['sma_50'], 'g-', label='50 Day MA')
-# plt.plot(df['sma_150'], 'r-', label='150 Day MA')
-# plt.plot(df['sma_200'], 'b-', label='200 Day MA')
-#
-# plt.ylabel('Price')
-# plt.xlabel('Date')
-#
-# plt.ylabel('Price')
-# plt.xlabel('Date')
-#
-# plt.grid(linestyle=':')
-#
-# plt.fill_between(df['sma_50'].index, 0, df['sma_50'], color='g', alpha=0.1)
-# plt.fill_between(df['sma_150'].index, 0, df['sma_150'], color='r', alpha=0.1)
-# plt.fill_between(df['sma_200'].index, 0, df['sma_200'], color='b', alpha=0.1)
-#
-# plt.legend(loc='upper left')
-#
-# plt.show()
+plt.plot(df['close'], 'k-', label='Original')
+plt.plot(df['sma_50'], 'g-', label='50 Day MA')
+plt.plot(df['sma_150'], 'r-', label='150 Day MA')
+plt.plot(df['sma_200'], 'b-', label='200 Day MA')
+
+plt.ylabel('Price')
+plt.xlabel('Date')
+
+plt.ylabel('Price')
+plt.xlabel('Date')
+
+plt.grid(linestyle=':')
+
+plt.fill_between(df['sma_50'].index, 0, df['sma_50'], color='g', alpha=0.1)
+plt.fill_between(df['sma_150'].index, 0, df['sma_150'], color='r', alpha=0.1)
+plt.fill_between(df['sma_200'].index, 0, df['sma_200'], color='b', alpha=0.1)
+
+plt.legend(loc='upper left')
+
+plt.show()
