@@ -64,7 +64,7 @@ def create_tables():
         " mode INT,"
         " count INT,"
         " company_id INT,"
-        " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
+        # " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
         " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
         ")")
     connection.commit()

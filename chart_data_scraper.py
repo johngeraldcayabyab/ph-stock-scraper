@@ -53,8 +53,9 @@ def insert_companies():
     connection = test_connection()
     cursor = connection.cursor()
     for i in range(get_total_pages()):
-        companies = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', json={
-            'pageNo': i,
+        page_no = i + 1
+        companies = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', data={
+            'pageNo': page_no,
             'sortType': '',
             'dateSortType': 'DESC',
             'cmpySortType': 'ASC',
@@ -63,6 +64,9 @@ def insert_companies():
             'keyword': '',
             'sector': 'ALL',
             'subsector': 'ALL'
+        }, headers={
+            'accept': '*/*',
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
         })
         soup = BeautifulSoup(companies.text, 'html.parser')
         t_body = soup.find_all("tbody")
