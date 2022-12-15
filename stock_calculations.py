@@ -95,5 +95,8 @@ def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
         plt.legend(loc='upper left')
 
         plt.show()
-    mode = stats.mode(total_days, keepdims=False)
-    return {'average': numpy.average(total_days), 'mode': mode[0], 'count': mode[1]}
+    if len(total_days):
+        average_days = numpy.average(total_days)
+        mode = stats.mode(total_days, keepdims=False)
+        return {'average': average_days, 'mode': mode[0], 'count': mode[1]}
+    return False
