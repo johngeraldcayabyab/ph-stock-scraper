@@ -15,7 +15,7 @@ def is_close_above_ma(row):
     return False
 
 
-def calculate_close_above_200_150_50_MA(company_id):
+def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
     db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
     db_connection = create_engine(db_connection_str)
     sql = 'SELECT * FROM chart_data WHERE company_id = %s ORDER BY chart_date ASC'
@@ -61,39 +61,39 @@ def calculate_close_above_200_150_50_MA(company_id):
     # print(row)
     for line in lines:
         total_days.append(len(line))
-        # x_values = [line[0]['chart_date'], line[-1]['chart_date']]
-        # y_values = [line[0]['close'], line[-1]['close']]
-        # plt.plot(x_values, y_values, linestyle="--")
+        if with_chart:
+            x_values = [line[0]['chart_date'], line[-1]['chart_date']]
+            y_values = [line[0]['close'], line[-1]['close']]
+            plt.plot(x_values, y_values, linestyle="--")
 
     print("average days a stock is above the (200,150,50) MA is = ", numpy.average(total_days))
-    # print(stats.mode(total_days))
+    print(stats.mode(total_days))
     # print(total_days)
     # print(len(total_days))
+
+    if with_chart:
+        plt.plot(df['close'], 'k-', label='Original')
+        plt.plot(df['sma_50'], 'g-', label='50 Day MA')
+        plt.plot(df['sma_150'], 'r-', label='150 Day MA')
+        plt.plot(df['sma_200'], 'b-', label='200 Day MA')
+
+        plt.ylabel('Price')
+        plt.xlabel('Date')
+
+        plt.ylabel('Price')
+        plt.xlabel('Date')
+
+        plt.grid(linestyle=':')
+
+        plt.fill_between(df['sma_50'].index, 0, df['sma_50'], color='g', alpha=0.1)
+        plt.fill_between(df['sma_150'].index, 0, df['sma_150'], color='r', alpha=0.1)
+        plt.fill_between(df['sma_200'].index, 0, df['sma_200'], color='b', alpha=0.1)
+
+        plt.legend(loc='upper left')
+
+        plt.show()
 
     return numpy.average(total_days)
 
 
 calculate_close_above_200_150_50_MA("2")
-
-# print(lines)
-
-# plt.plot(df['close'], 'k-', label='Original')
-# plt.plot(df['sma_50'], 'g-', label='50 Day MA')
-# plt.plot(df['sma_150'], 'r-', label='150 Day MA')
-# plt.plot(df['sma_200'], 'b-', label='200 Day MA')
-#
-# plt.ylabel('Price')
-# plt.xlabel('Date')
-#
-# plt.ylabel('Price')
-# plt.xlabel('Date')
-#
-# plt.grid(linestyle=':')
-#
-# plt.fill_between(df['sma_50'].index, 0, df['sma_50'], color='g', alpha=0.1)
-# plt.fill_between(df['sma_150'].index, 0, df['sma_150'], color='r', alpha=0.1)
-# plt.fill_between(df['sma_200'].index, 0, df['sma_200'], color='b', alpha=0.1)
-#
-# plt.legend(loc='upper left')
-#
-# plt.show()
