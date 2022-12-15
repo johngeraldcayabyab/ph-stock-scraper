@@ -27,6 +27,7 @@ def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
     df['sma_150'] = df['close'].rolling(150).mean()
     df['sma_50'] = df['close'].rolling(50).mean()
     df['chart_date'] = pd.to_datetime(query['chart_date'])
+    df['volume'] = query['volume']
     df['average_above'] = False
 
     df = df.sort_values(by='chart_date')
@@ -89,6 +90,8 @@ def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
         plt.fill_between(df['sma_150'].index, 0, df['sma_150'], color='r', alpha=0.1)
         plt.fill_between(df['sma_200'].index, 0, df['sma_200'], color='b', alpha=0.1)
 
+        # plt.bar(df['chart_date'], df['volume'], width=15, color='darkgrey')
+
         plt.legend(loc='upper left')
 
         plt.show()
@@ -96,4 +99,4 @@ def calculate_close_above_200_150_50_MA(company_id, with_chart=False):
     return numpy.average(total_days)
 
 
-calculate_close_above_200_150_50_MA("2")
+calculate_close_above_200_150_50_MA("2", with_chart=True)
