@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from redis import Redis
 from rq import Queue
@@ -15,16 +15,20 @@ def get_all_chart_data():
     cursor.execute("SELECT * FROM companies")
     companies = cursor.fetchall()
     today = date.today().strftime("%m-%d-%Y")
+    yesterday = (date.today() - timedelta(days=1)).strftime("%m-%d-%Y")
     for company in companies:
         q.enqueue(
             scrap_and_insert_chart_data,
             cmpy_id=company[1],
             security_id=company[2],
-            listing_date=today,
+            listing_date=yesterday,
             company_id=company[0]
         )
 
 
 # insert_companies()
-# get_all_chart_data()
-minervini_scanner(159, with_chart=True)
+get_all_chart_data()
+# minervini_scanner(159, with_chart=True)
+
+
+# print((date.today() - timedelta(days=1)).strftime("%m-%d-%Y"))
