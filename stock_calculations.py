@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy
+import numpy as np
 import pandas as pd
 from scipy import stats
 from sqlalchemy import create_engine
@@ -13,6 +13,13 @@ def is_close_above_ma(row):
     if close > sma_200 and close > sma_150 and close > sma_50:
         return True
     return False
+
+
+
+def rma(x, n, y0):
+    a = (n-1) / n
+    ak = a**np.arange(len(x)-1, -1, -1)
+    return np.r_[np.full(n, np.nan), y0, np.cumsum(ak * x) / ak / n + y0 * a**np.arange(1, len(x)+1)]
 
 
 def minervini_scanner(company_id, with_chart=False):
@@ -39,24 +46,17 @@ def minervini_scanner(company_id, with_chart=False):
     change = df['close'].diff()
     df.dropna(inplace=True)
 
-    change_up = change.copy()
-    change_down = change.copy()
-    change_up[change_up < 0] = 0
-    change_down[change_down > 0] = 0
+    n = 14
 
-    # Verify that we did not make any mistakes
-    change.equals(change_up + change_down)
+    df['change'] = df['close'].diff()
+    df['gain'] = df.change.mask(df.change < 0, 0.0)
+    df['loss'] = -df.change.mask(df.change > 0, -0.0)
+    df['avg_gain'] = rma(df.gain[n + 1:].to_numpy(), n, np.nansum(df.gain.to_numpy()[:n + 1]) / n)
+    df['avg_loss'] = rma(df.loss[n + 1:].to_numpy(), n, np.nansum(df.loss.to_numpy()[:n + 1]) / n)
+    df['rs'] = df.avg_gain / df.avg_loss
+    df['rsi_14'] = 100 - (100 / (1 + df.rs))
 
-    # Calculate the rolling average of average up and average down
-    avg_up = change_up.rolling(14).mean()
-    avg_down = change_down.rolling(14).mean().abs()
 
-    rsi = 100 * avg_up / (avg_up + avg_down)
-
-    # Take a look at the 20 oldest datapoints
-    rsi.head(20)
-
-    # print(type(df))
     #
     # this should be the code that would draw lines on when all the things is correct below
     count = 0
@@ -97,6 +97,8 @@ def minervini_scanner(company_id, with_chart=False):
     # print(total_days)
     # print(len(total_days))
 
+    print(df)
+
     if with_chart:
         plt.plot(df['close'], 'k-', label='Original')
         plt.plot(df['sma_50'], 'g-', label='50 Day MA')
@@ -116,7 +118,7 @@ def minervini_scanner(company_id, with_chart=False):
         plt.show()
 
     if len(total_days):
-        average_days = numpy.average(total_days)
+        average_days = np.average(total_days)
         mode = stats.mode(total_days, keepdims=False)
         return {'average': average_days, 'mode': mode[0], 'count': mode[1]}
     return False
