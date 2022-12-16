@@ -37,4 +37,5 @@
 <li>Usually you should sum your money values at 13,4 before rounding of the output to 13,2.</li>
 <li>On average, there's too much false alarm when a stock breaks out of its 200, 150, 50 MA.</li>
 <li>Create a stock ranking from minvervi scanner</li>
+<li>Create a linear regression on what will be the average up days if a stock matches minervinis scanner</li>
 </ul>
