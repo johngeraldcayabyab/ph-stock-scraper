@@ -16,12 +16,13 @@ def get_all_chart_data():
     companies = cursor.fetchall()
     today = date.today().strftime("%m-%d-%Y")
     yesterday = (date.today() - timedelta(days=1)).strftime("%m-%d-%Y")
+    override_date = '12-15-2022'
     for company in companies:
         q.enqueue(
             scrap_and_insert_chart_data,
             cmpy_id=company[1],
             security_id=company[2],
-            listing_date=yesterday,
+            listing_date=override_date,
             company_id=company[0]
         )
 
@@ -41,8 +42,8 @@ def compute_all_chart_data():
 
 
 # insert_companies()
-# get_all_chart_data()
+get_all_chart_data()
 # minervini_scanner(159, with_chart=True)
 # print((date.today() - timedelta(days=1)).strftime("%m-%d-%Y"))
 
-compute_all_chart_data()
+# compute_all_chart_data()
