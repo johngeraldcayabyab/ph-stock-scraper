@@ -126,9 +126,9 @@ def minervini_scanner(company_id, with_chart=False):
     return False
 
 
-def update_chart_data(row):
+def update_chart_data(rsi_14, sma_200, sma_150, sma_50, id):
     sql = "UPDATE chart_data SET rsi_14 = %s, sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s"
-    val = (row.rsi_14, row.sma_200, row.sma_150, row.sma_50, row.id)
+    val = (rsi_14, sma_200, sma_150, sma_50, id)
     connection = test_connection()
     cursor = connection.cursor()
     cursor.execute(sql, val)
@@ -165,11 +165,19 @@ def compute_screener(company_id):
     df['rs'] = df.avg_gain / df.avg_loss
     df['rsi_14'] = 100 - (100 / (1 + df.rs))
 
-    df = df.reset_index()
     for row in df.itertuples():
+        rsi_14 = row.rsi_14
+        sma_200 = row.sma_200
+        sma_150 = row.sma_150
+        sma_50 = row.sma_50
+        id = row.id
         q.enqueue(
             update_chart_data,
-            row
+            rsi_14=rsi_14,
+            sma_200=sma_200,
+            sma_150=sma_150,
+            sma_50=sma_50,
+            id=id
         )
 
     return False
