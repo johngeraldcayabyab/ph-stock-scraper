@@ -27,12 +27,17 @@ def get_all_chart_data():
 
 
 def compute_all_chart_data():
+    redis_conn = Redis('localhost', 6379)
+    q = Queue(connection=redis_conn)
     connection = test_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM companies")
     companies = cursor.fetchall()
     for company in companies:
-        compute_screener(company_id=company[0])
+        q.enqueue(
+            compute_screener,
+            company_id=company[0],
+        )
 
 
 # insert_companies()

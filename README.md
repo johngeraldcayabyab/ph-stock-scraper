@@ -30,7 +30,7 @@
 
 
 
-<h3>Testing</h3>
+<h3>Notes</h3>
 <ul>
 <li>One of the first goal is to test the average days a stock stays above, 200, 150, 50 MA</li>
 <li>Next step is to make a model that predicts how many days a stock stays above , 200, 150, 50 MA</li>
@@ -38,4 +38,5 @@
 <li>On average, there's too much false alarm when a stock breaks out of its 200, 150, 50 MA.</li>
 <li>Create a stock ranking from minvervi scanner</li>
 <li>Create a linear regression on what will be the average up days if a stock matches minervinis scanner</li>
+<li>Different types of calculation must be made, a computation for all the SMAs, and RSI plus another one for the scoring list</li>
 </ul>
