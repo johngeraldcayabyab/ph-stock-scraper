@@ -1,18 +1,25 @@
 import requests
 import datetime
-from datetime import date
+from datetime import date, timedelta
 from db import test_connection
 from bs4 import BeautifulSoup
 
 
-def scrap_and_insert_chart_data(company_id, cmpy_id, security_id, listing_date):
-    end_date = date.today().strftime("%m-%d-%Y")
+def yesterday():
+    return (date.today() - timedelta(days=1)).strftime("%m-%d-%Y")
+
+
+def date_today():
+    return date.today().strftime("%m-%d-%Y")
+
+
+def scrap_and_insert_chart_data(company_id, cmpy_id, security_id, start_date=date_today(), end_date=date_today()):
     connection = test_connection()
     cursor = connection.cursor()
     response = requests.post('https://edge.pse.com.ph/common/DisclosureCht.ax', json={
         "cmpy_id": cmpy_id,
         "security_id": security_id,
-        "startDate": listing_date,
+        "startDate": start_date,
         "endDate": end_date
     }, headers={
         'Content-type': 'application/json',

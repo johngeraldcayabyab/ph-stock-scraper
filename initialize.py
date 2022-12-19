@@ -102,7 +102,7 @@ def get_all_chart_data():
             scrap_and_insert_chart_data,
             cmpy_id=company[1],
             security_id=company[2],
-            listing_date=company[5].strftime("%m-%d-%Y"),
+            start_date=company[5].strftime("%m-%d-%Y"),
             company_id=company[0]
         )
 
