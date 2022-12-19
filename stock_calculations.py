@@ -46,7 +46,6 @@ def minervini_scanner(company_id, with_chart=False):
 
     # removing all the NULL values using
     # dropna() method
-    change = df['close'].diff()
     df.dropna(inplace=True)
 
     n = 14
@@ -129,16 +128,19 @@ def minervini_scanner(company_id, with_chart=False):
 def update_chart_data(chunked):
     connection = test_connection()
     cursor = connection.cursor()
-    #make an update statement with these chunked rows
+    sql = "UPDATE chart_data SET rsi_14 = %s, sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s "
+    values = []
     for row in chunked.itertuples():
-        print(row)
-        # sql = "UPDATE chart_data SET rsi_14 = %s, sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s"
-        # val = (rsi_14, sma_200, sma_150, sma_50, id)
-        # connection = test_connection()
-        # cursor = connection.cursor()
-        # cursor.execute(sql, val)
-        # connection.commit()
+        values.append((
+            row.rsi_14,
+            row.sma_200,
+            row.sma_150,
+            row.sma_50,
+            row.id
+        ))
+    cursor.executemany(sql, values)
     connection.commit()
+
 
 def compute_screener(company_id):
     redis_conn = Redis('localhost', 6379)
@@ -170,9 +172,7 @@ def compute_screener(company_id):
     df['rs'] = df.avg_gain / df.avg_loss
     df['rsi_14'] = 100 - (100 / (1 + df.rs))
 
-    # print(type(df.itertuples()))
-
-    n = 1000  # chunk row size
+    n = 1000
     list_df = [df[i:i + n] for i in range(0, df.shape[0], n)]
 
     for chunked in list_df:
@@ -180,21 +180,5 @@ def compute_screener(company_id):
             update_chart_data,
             chunked=chunked
         )
-
-    # for row in df.itertuples():
-    #     print(type(row))
-    # rsi_14 = row.rsi_14
-    # sma_200 = row.sma_200
-    # sma_150 = row.sma_150
-    # sma_50 = row.sma_50
-    # id = row.id
-    # q.enqueue(
-    #     update_chart_data,
-    #     rsi_14=rsi_14,
-    #     sma_200=sma_200,
-    #     sma_150=sma_150,
-    #     sma_50=sma_50,
-    #     id=id
-    # )
 
     return False
