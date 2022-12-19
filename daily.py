@@ -32,7 +32,10 @@ def compute_all_chart_data():
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM companies")
     companies = cursor.fetchall()
-    for company in companies:
+    for index, company in enumerate(companies):
+        # if index < limit:
+        #     continue
+
         q.enqueue(
             compute_screener,
             company_id=company[0],
