@@ -1,3 +1,5 @@
+import math
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -48,13 +50,19 @@ def minervini_scanner(company_id, with_chart=False):
     # dropna() method
     df.dropna(inplace=True)
 
-    n = 14
+    window_length = 14
 
     df['change'] = df['close'].diff()
     df['gain'] = df.change.mask(df.change < 0, 0.0)
     df['loss'] = -df.change.mask(df.change > 0, -0.0)
-    df['avg_gain'] = rma(df.gain[n + 1:].to_numpy(), n, np.nansum(df.gain.to_numpy()[:n + 1]) / n)
-    df['avg_loss'] = rma(df.loss[n + 1:].to_numpy(), n, np.nansum(df.loss.to_numpy()[:n + 1]) / n)
+
+    gain_numpy = df.gain[window_length + 1:].to_numpy()
+    loss_numpy = df.loss[window_length + 1:].to_numpy()
+    df_gain_sum = np.nansum(df.gain.to_numpy()[:window_length + 1]) / window_length
+    df_loss_sum = np.nansum(df.loss.to_numpy()[:window_length + 1]) / window_length
+
+    df['avg_gain'] = rma(gain_numpy, window_length, df_gain_sum)
+    df['avg_loss'] = rma(loss_numpy, window_length, df_loss_sum)
     df['rs'] = df.avg_gain / df.avg_loss
     df['rsi_14'] = 100 - (100 / (1 + df.rs))
 
@@ -131,8 +139,9 @@ def update_chart_data(chunked):
     sql = "UPDATE chart_data SET rsi_14 = %s, sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s "
     values = []
     for row in chunked.itertuples():
+        rsi_14 = row.rsi_14 if not math.isnan(row.rsi_14) else 0
         values.append((
-            row.rsi_14,
+            rsi_14,
             row.sma_200,
             row.sma_150,
             row.sma_50,
@@ -162,13 +171,16 @@ def compute_screener(company_id):
     df = df.set_index(df['chart_date'])
     df.dropna(inplace=True)
 
-    n = 14
-
+    window_length = 14
     df['change'] = df['close'].diff()
     df['gain'] = df.change.mask(df.change < 0, 0.0)
     df['loss'] = -df.change.mask(df.change > 0, -0.0)
-    df['avg_gain'] = rma(df.gain[n + 1:].to_numpy(), n, np.nansum(df.gain.to_numpy()[:n + 1]) / n)
-    df['avg_loss'] = rma(df.loss[n + 1:].to_numpy(), n, np.nansum(df.loss.to_numpy()[:n + 1]) / n)
+    gain_numpy = df.gain[window_length + 1:].to_numpy()
+    loss_numpy = df.loss[window_length + 1:].to_numpy()
+    df_gain_sum = np.nansum(df.gain.to_numpy()[:window_length + 1]) / window_length
+    df_loss_sum = np.nansum(df.loss.to_numpy()[:window_length + 1]) / window_length
+    df['avg_gain'] = rma(gain_numpy, window_length, df_gain_sum)
+    df['avg_loss'] = rma(loss_numpy, window_length, df_loss_sum)
     df['rs'] = df.avg_gain / df.avg_loss
     df['rsi_14'] = 100 - (100 / (1 + df.rs))
 
