@@ -7,7 +7,6 @@ from db import test_connection
 from stock_calculations import minervini_scanner, compute_screener
 
 
-
 def get_all_chart_data(start_date=date_today(), end_date=date_today()):
     redis_conn = Redis('localhost', 6379)
     q = Queue(connection=redis_conn)
@@ -42,8 +41,8 @@ def compute_all_chart_data():
 
 # override_date = '12-15-2022'
 # insert_companies()
-get_all_chart_data(start_date='12-15-2022', end_date='12-15-2022')
+# get_all_chart_data(start_date='12-15-2022', end_date='12-16-2022')
 # minervini_scanner(159, with_chart=True)
 # print((date.today() - timedelta(days=1)).strftime("%m-%d-%Y"))
 
-# compute_all_chart_data()
+compute_all_chart_data()
