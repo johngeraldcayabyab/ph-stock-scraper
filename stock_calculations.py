@@ -146,13 +146,16 @@ def update_chart_data_sma(chunked):
         sma_200 = row.sma_200
         sma_150 = row.sma_150
         sma_50 = row.sma_50
-        # rsi_14 = row.rsi_14
-        # if math.isnan(row.rsi_14):
-        #     rsi_14 = 0
+        if math.isnan(sma_200):
+            sma_200 = None
+        if math.isnan(sma_150):
+            sma_150 = None
+        if math.isnan(sma_50):
+            sma_50 = None
         values.append((
-            row.sma_200,
-            row.sma_150,
-            row.sma_50,
+            sma_200,
+            sma_150,
+            sma_50,
             row.id
         ))
     cursor.executemany(sql, values)
@@ -172,26 +175,8 @@ def update_chart_data_rsi(chunked):
             rsi_14,
             row.id
         ))
-    print(sql, values)
     cursor.executemany(sql, values)
     connection.commit()
-    # connection = test_connection()
-    # cursor = connection.cursor()
-    # sql = "UPDATE chart_data SET rsi_14 = %s, sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s "
-    # values = []
-    # for row in chunked.itertuples():
-    #     rsi_14 = row.rsi_14
-    #     if math.isnan(row.rsi_14):
-    #         rsi_14 = 0
-    #     values.append((
-    #         rsi_14,
-    #         row.sma_200,
-    #         row.sma_150,
-    #         row.sma_50,
-    #         row.id
-    #     ))
-    # cursor.executemany(sql, values)
-    # connection.commit()
 
 
 def calculate_rsi(company_id):
@@ -200,8 +185,8 @@ def calculate_rsi(company_id):
     db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
     db_connection = create_engine(db_connection_str)
     sql = 'SELECT * FROM chart_data WHERE company_id = {0} ORDER BY chart_date ASC'.format(company_id)
-    # pd.set_option('mode.chained_assignment', None) #activate when ready
-    df = pd.read_sql_query(sql=sql, con=db_connection).set_index(['chart_date'])
+    pd.set_option('mode.chained_assignment', None)
+    df = pd.read_sql_query(sql=sql, con=db_connection).set_index('chart_date')
     #
 
     df['close_diff'] = df['close'].diff()
@@ -209,8 +194,12 @@ def calculate_rsi(company_id):
     df['loss'] = df['close_diff'].clip(upper=0).abs().round(2)
 
     window_length = 14
-    df['avg_gain'] = df['gain'].rolling(window=window_length, min_periods=window_length).mean()[:window_length + 1]
-    df['avg_loss'] = df['loss'].rolling(window=window_length, min_periods=window_length).mean()[:window_length + 1]
+    gain_rolling = df['gain'].rolling(window=window_length, min_periods=window_length)
+    loss_rolling = df['loss'].rolling(window=window_length, min_periods=window_length)
+    avg_gain_rolling = gain_rolling.mean()
+    avg_loss_rolling = loss_rolling.mean()
+    df['avg_gain'] = avg_gain_rolling[:window_length + 1]
+    df['avg_loss'] = avg_loss_rolling[:window_length + 1]
 
     # Get WMS averages
     # Average Gains
@@ -234,57 +223,21 @@ def calculate_rsi(company_id):
         )
 
 
-def compute_screener(company_id):
+def calculate_sma(company_id):
     redis_conn = Redis('localhost', 6379)
     q = Queue(connection=redis_conn)
     db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
     db_connection = create_engine(db_connection_str)
     sql = 'SELECT * FROM chart_data WHERE company_id = {0} ORDER BY chart_date ASC'.format(company_id)
+    pd.set_option('mode.chained_assignment', None)
     df = pd.read_sql_query(sql=sql, con=db_connection)
-
-    # print(df[])
-
-    # print(query)
-    #
-    # df = query['close'].to_frame()
-    #
-    # print(df)
-
-    # df['id'] = query['id']
     df['sma_200'] = df['close'].rolling(200).mean()
     df['sma_150'] = df['close'].rolling(150).mean()
     df['sma_50'] = df['close'].rolling(50).mean()
-
     list_df = chunk_df(df, 1000)
-
-    print(df)
-
-    # df['chart_date'] = pd.to_datetime(query['chart_date'])
-    # df['volume'] = query['volume']
-    # df['average_above'] = False
-    # df = df.sort_values(by='chart_date')
-    # df = df.set_index(df['chart_date'])
-    # df.dropna(inplace=True)
-    #
-    window_length = 14
-    df['change'] = df['close'].diff()
-    df['gain'] = df.change.mask(df.change < 0, 0.0)
-    df['loss'] = -df.change.mask(df.change > 0, -0.0)
-    gain_numpy = df.gain[window_length + 1:].to_numpy()
-    loss_numpy = df.loss[window_length + 1:].to_numpy()
-    df_gain_sum = np.nansum(df.gain.to_numpy()[:window_length + 1]) / window_length
-    df_loss_sum = np.nansum(df.loss.to_numpy()[:window_length + 1]) / window_length
-    df['avg_gain'] = rma(gain_numpy, window_length, df_gain_sum)
-    df['avg_loss'] = rma(loss_numpy, window_length, df_loss_sum)
-    df['rs'] = df.avg_gain / df.avg_loss
-    df['rsi_14'] = 100 - (100 / (1 + df.rs))
-
-    list_df = chunk_df(df, 1000)
-
     for chunked in list_df:
         q.enqueue(
-            update_chart_data_rsi,
+            update_chart_data_sma,
             chunked=chunked
         )
-    #
     return False
