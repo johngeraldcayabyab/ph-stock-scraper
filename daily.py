@@ -42,7 +42,7 @@ def compute_all_chart_data():
         )
 
 
-compute_screener(169)
+calculate_rsi(169)
 
 # override_date = '12-15-2022'
 # insert_companies()
