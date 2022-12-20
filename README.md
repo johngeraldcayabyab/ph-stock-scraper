@@ -40,3 +40,10 @@
 <li>Create a linear regression on what will be the average up days if a stock matches minervinis scanner</li>
 <li>Different types of calculation must be made, a computation for all the SMAs, and RSI plus another one for the scoring list</li>
 </ul>
+
+
+<h3>References/Random</h3>
+<ul>
+<li><a href="https://www.alpharithms.com/relative-strength-index-rsi-in-python-470209/">Calculating RSI</a></li>
+<li><a href="https://towardsdatascience.com/visualizing-stock-trading-agents-using-matplotlib-and-gym-584c992bc6d4">Visualizing stock trading</a></li>
+</ul>
