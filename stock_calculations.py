@@ -139,7 +139,9 @@ def update_chart_data(chunked):
     sql = "UPDATE chart_data SET rsi_14 = %s, sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s "
     values = []
     for row in chunked.itertuples():
-        rsi_14 = row.rsi_14 if not math.isnan(row.rsi_14) else 0
+        rsi_14 = row.rsi_14
+        if math.isnan(row.rsi_14):
+            rsi_14 = 0
         values.append((
             rsi_14,
             row.sma_200,
@@ -157,20 +159,30 @@ def compute_screener(company_id):
     db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
     db_connection = create_engine(db_connection_str)
     sql = 'SELECT * FROM chart_data WHERE company_id = {0} ORDER BY chart_date ASC'.format(company_id)
-    query = pd.read_sql_query(sql=sql, con=db_connection)
+    df = pd.read_sql_query(sql=sql, con=db_connection)
 
-    df = query['close'].to_frame()
-    df['id'] = query['id']
+    # print(df[])
+
+    # print(query)
+    #
+    # df = query['close'].to_frame()
+    #
+    # print(df)
+
+    # df['id'] = query['id']
     df['sma_200'] = df['close'].rolling(200).mean()
     df['sma_150'] = df['close'].rolling(150).mean()
     df['sma_50'] = df['close'].rolling(50).mean()
-    df['chart_date'] = pd.to_datetime(query['chart_date'])
-    df['volume'] = query['volume']
-    df['average_above'] = False
-    df = df.sort_values(by='chart_date')
-    df = df.set_index(df['chart_date'])
-    df.dropna(inplace=True)
 
+    print(df)
+
+    # df['chart_date'] = pd.to_datetime(query['chart_date'])
+    # df['volume'] = query['volume']
+    # df['average_above'] = False
+    # df = df.sort_values(by='chart_date')
+    # df = df.set_index(df['chart_date'])
+    # df.dropna(inplace=True)
+    #
     window_length = 14
     df['change'] = df['close'].diff()
     df['gain'] = df.change.mask(df.change < 0, 0.0)
@@ -192,5 +204,5 @@ def compute_screener(company_id):
             update_chart_data,
             chunked=chunked
         )
-
+    #
     return False

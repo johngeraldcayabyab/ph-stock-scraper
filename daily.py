@@ -42,10 +42,12 @@ def compute_all_chart_data():
         )
 
 
+compute_screener(169)
+
 # override_date = '12-15-2022'
 # insert_companies()
 # get_all_chart_data(start_date='12-15-2022', end_date='12-16-2022')
 # minervini_scanner(159, with_chart=True)
 # print((date.today() - timedelta(days=1)).strftime("%m-%d-%Y"))
 
-compute_all_chart_data()
+# compute_all_chart_data()
