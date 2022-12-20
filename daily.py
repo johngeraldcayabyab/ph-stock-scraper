@@ -4,7 +4,7 @@ from redis import Redis
 from rq import Queue
 from chart_data_scraper import scrap_and_insert_chart_data, insert_companies, date_today, yesterday
 from db import test_connection
-from stock_calculations import minervini_scanner, compute_screener
+from stock_calculations import minervini_scanner, compute_screener, calculate_rsi
 
 
 def get_all_chart_data(start_date=date_today(), end_date=date_today()):
@@ -37,7 +37,7 @@ def compute_all_chart_data():
         #     continue
 
         q.enqueue(
-            compute_screener,
+            calculate_rsi,
             company_id=company[0],
         )
 

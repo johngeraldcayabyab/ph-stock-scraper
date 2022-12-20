@@ -11,6 +11,10 @@ from rq import Queue
 from db import test_connection
 
 
+def chunk_df(df, n=1000):
+    return [df[i:i + n] for i in range(0, df.shape[0], n)]
+
+
 def is_close_above_ma(row):
     close = float(row['close'])
     sma_200 = float(row['sma_200'])
@@ -136,7 +140,7 @@ def minervini_scanner(company_id, with_chart=False):
 def update_chart_data(chunked):
     connection = test_connection()
     cursor = connection.cursor()
-    sql = "UPDATE chart_data SET rsi_14 = %s, sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s "
+    sql = "UPDATE chart_data SET rsi_14 = %s WHERE id = %s "
     values = []
     for row in chunked.itertuples():
         rsi_14 = row.rsi_14
@@ -144,13 +148,44 @@ def update_chart_data(chunked):
             rsi_14 = 0
         values.append((
             rsi_14,
-            row.sma_200,
-            row.sma_150,
-            row.sma_50,
             row.id
         ))
     cursor.executemany(sql, values)
     connection.commit()
+    # connection = test_connection()
+    # cursor = connection.cursor()
+    # sql = "UPDATE chart_data SET rsi_14 = %s, sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s "
+    # values = []
+    # for row in chunked.itertuples():
+    #     rsi_14 = row.rsi_14
+    #     if math.isnan(row.rsi_14):
+    #         rsi_14 = 0
+    #     values.append((
+    #         rsi_14,
+    #         row.sma_200,
+    #         row.sma_150,
+    #         row.sma_50,
+    #         row.id
+    #     ))
+    # cursor.executemany(sql, values)
+    # connection.commit()
+
+
+def calculate_rsi(company_id):
+    redis_conn = Redis('localhost', 6379)
+    q = Queue(connection=redis_conn)
+    db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
+    db_connection = create_engine(db_connection_str)
+    sql = 'SELECT * FROM chart_data WHERE company_id = {0} ORDER BY chart_date ASC'.format(company_id)
+    df = pd.read_sql_query(sql=sql, con=db_connection)
+
+    list_df = chunk_df(df, 1000)
+
+    for chunked in list_df:
+        q.enqueue(
+            update_chart_data,
+            chunked=chunked
+        )
 
 
 def compute_screener(company_id):
@@ -174,6 +209,8 @@ def compute_screener(company_id):
     df['sma_150'] = df['close'].rolling(150).mean()
     df['sma_50'] = df['close'].rolling(50).mean()
 
+    list_df = chunk_df(df, 1000)
+
     print(df)
 
     # df['chart_date'] = pd.to_datetime(query['chart_date'])
@@ -196,8 +233,7 @@ def compute_screener(company_id):
     df['rs'] = df.avg_gain / df.avg_loss
     df['rsi_14'] = 100 - (100 / (1 + df.rs))
 
-    n = 1000
-    list_df = [df[i:i + n] for i in range(0, df.shape[0], n)]
+    list_df = chunk_df(df, 1000)
 
     for chunked in list_df:
         q.enqueue(
