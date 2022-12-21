@@ -1,10 +1,9 @@
-from datetime import date, timedelta
-
 from redis import Redis
 from rq import Queue
-from chart_data_scraper import scrap_and_insert_chart_data, insert_companies, date_today, yesterday
+
+from chart_data_scraper import scrap_and_insert_chart_data, date_today
 from db import test_connection
-from stock_calculations import minervini_scanner, calculate_rsi, calculate_sma
+from stock_calculations import calculate_rsi, calculate_sma
 
 
 def get_all_chart_data(start_date=date_today(), end_date=date_today()):
