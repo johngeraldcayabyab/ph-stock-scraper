@@ -46,4 +46,5 @@
 <ul>
 <li><a href="https://www.alpharithms.com/relative-strength-index-rsi-in-python-470209/">Calculating RSI</a></li>
 <li><a href="https://towardsdatascience.com/visualizing-stock-trading-agents-using-matplotlib-and-gym-584c992bc6d4">Visualizing stock trading</a></li>
+<li><a href="https://towardsdatascience.com/how-to-easily-run-python-visualizations-on-a-web-browser-with-pyscript-4b287ef991cd">How to Easily Run Python Visualizations On a Web Browser with PyScript</a></li>
 </ul>

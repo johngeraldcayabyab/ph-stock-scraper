@@ -186,7 +186,7 @@ def calculate_rsi(company_id):
     db_connection = create_engine(db_connection_str)
     sql = 'SELECT * FROM chart_data WHERE company_id = {0} ORDER BY chart_date ASC'.format(company_id)
     pd.set_option('mode.chained_assignment', None)
-    df = pd.read_sql_query(sql=sql, con=db_connection).set_index('chart_date')
+    df = pd.read_sql_query(sql=sql, con=db_connection).set_index(['id', 'chart_date'])
     #
 
     df['close_diff'] = df['close'].diff()
@@ -198,10 +198,8 @@ def calculate_rsi(company_id):
     loss_rolling = df['loss'].rolling(window=window_length, min_periods=window_length)
     avg_gain_rolling = gain_rolling.mean()
     avg_loss_rolling = loss_rolling.mean()
-    avg_gain_rolling_window_length = avg_gain_rolling[:window_length + 1]
-    avg_loss_rolling_window_length = avg_loss_rolling[:window_length + 1]
-    df['avg_gain'] = avg_gain_rolling_window_length.values
-    df['avg_loss'] = avg_loss_rolling_window_length.values
+    df['avg_gain'] = avg_gain_rolling[:window_length + 1].fillna(0)
+    df['avg_loss'] = avg_loss_rolling[:window_length + 1].fillna(0)
 
     # Get WMS averages
     # Average Gains
@@ -216,6 +214,8 @@ def calculate_rsi(company_id):
     df['rs'] = df['avg_gain'] / df['avg_loss']
     df['rsi_14'] = 100 - (100 / (1.0 + df['rs']))
 
+    df = df.reset_index()
+
     list_df = chunk_df(df, 1000)
 
     for chunked in list_df:
@@ -227,7 +227,7 @@ def calculate_rsi(company_id):
 
 def calculate_sma(company_id):
     redis_conn = Redis('localhost', 6379)
-    q = Queue(connection=redis_conn)
+    q = Queue(connection=redis_conn, name='update_chart_data_sma')
     db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
     db_connection = create_engine(db_connection_str)
     sql = 'SELECT * FROM chart_data WHERE company_id = {0} ORDER BY chart_date ASC'.format(company_id)

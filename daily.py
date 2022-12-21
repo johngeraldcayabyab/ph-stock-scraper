@@ -27,21 +27,22 @@ def get_all_chart_data(start_date=date_today(), end_date=date_today()):
 
 def compute_all_chart_data():
     redis_conn = Redis('localhost', 6379)
-    q = Queue(connection=redis_conn, name='calculate_rsi')
+    rsi_queue = Queue(connection=redis_conn, name='calculate_rsi')
+    sma_queue = Queue(connection=redis_conn, name='calculate_sma')
     connection = test_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM companies")
     companies = cursor.fetchall()
     for index, company in enumerate(companies):
         company_id = company[0]
-        q.enqueue(
+        rsi_queue.enqueue(
             calculate_rsi,
             company_id=company_id,
         )
-        # q.enqueue(
-        #     calculate_sma,
-        #     company_id=company_id,
-        # )
+        sma_queue.enqueue(
+            calculate_sma,
+            company_id=company_id,
+        )
 
 
 # calculate_rsi(169)
