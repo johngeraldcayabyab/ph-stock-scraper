@@ -181,7 +181,7 @@ def update_chart_data_rsi(chunked):
 
 def calculate_rsi(company_id):
     redis_conn = Redis('localhost', 6379)
-    q = Queue(connection=redis_conn)
+    q = Queue(connection=redis_conn, name='update_chart_data_rsi')
     db_connection_str = 'mysql+pymysql://root@localhost/ph_stock_scraper'
     db_connection = create_engine(db_connection_str)
     sql = 'SELECT * FROM chart_data WHERE company_id = {0} ORDER BY chart_date ASC'.format(company_id)
@@ -198,8 +198,10 @@ def calculate_rsi(company_id):
     loss_rolling = df['loss'].rolling(window=window_length, min_periods=window_length)
     avg_gain_rolling = gain_rolling.mean()
     avg_loss_rolling = loss_rolling.mean()
-    df['avg_gain'] = avg_gain_rolling[:window_length + 1]
-    df['avg_loss'] = avg_loss_rolling[:window_length + 1]
+    avg_gain_rolling_window_length = avg_gain_rolling[:window_length + 1]
+    avg_loss_rolling_window_length = avg_loss_rolling[:window_length + 1]
+    df['avg_gain'] = avg_gain_rolling_window_length.values
+    df['avg_loss'] = avg_loss_rolling_window_length.values
 
     # Get WMS averages
     # Average Gains
