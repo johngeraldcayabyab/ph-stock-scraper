@@ -1,0 +1,1 @@
+rq worker scrap_and_insert_chart_data

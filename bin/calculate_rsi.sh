@@ -1,0 +1,1 @@
+rq worker calculate_rsi
