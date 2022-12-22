@@ -4,17 +4,18 @@ from rq import Queue
 from chart_data_scraper import scrap_and_insert_chart_data, date_today
 from db import test_connection
 from stock_calculations import calculate_rsi, calculate_sma
+from utils import yesterday
 
 
 def get_all_chart_data(start_date=date_today(), end_date=date_today()):
     redis_conn = Redis('localhost', 6379)
-    q = Queue(connection=redis_conn)
+    scraper_queue = Queue(connection=redis_conn, name='scrap_and_insert_chart_data')
     connection = test_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM companies")
     companies = cursor.fetchall()
     for company in companies:
-        q.enqueue(
+        scraper_queue.enqueue(
             scrap_and_insert_chart_data,
             cmpy_id=company[1],
             security_id=company[2],
@@ -49,8 +50,8 @@ def compute_all_chart_data():
 
 # override_date = '12-15-2022'
 # insert_companies()
-# get_all_chart_data(yesterday(), yesterday())
+get_all_chart_data(yesterday(), yesterday())
 # minervini_scanner(159, with_chart=True)
 # print((date.today() - timedelta(days=1)).strftime("%m-%d-%Y"))
 
-compute_all_chart_data()
+# compute_all_chart_data()

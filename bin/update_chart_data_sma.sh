@@ -1,0 +1,1 @@
+rq worker update_chart_data_sma
