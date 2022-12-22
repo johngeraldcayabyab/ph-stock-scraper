@@ -1,16 +1,10 @@
-import requests
 import datetime
-from datetime import date, timedelta
-from db import test_connection
+
+import requests
 from bs4 import BeautifulSoup
 
-
-def yesterday():
-    return (date.today() - timedelta(days=1)).strftime("%m-%d-%Y")
-
-
-def date_today():
-    return date.today().strftime("%m-%d-%Y")
+from db import test_connection
+from utils import date_today
 
 
 def scrap_and_insert_chart_data(company_id, cmpy_id, security_id, start_date=date_today(), end_date=date_today()):

@@ -2,7 +2,10 @@ from redis import Redis
 from rq import Queue
 
 from db import test_connection
-from stock_calculations import minervini_scanner
+from scanner import minervini_scanner
+
+
+# from stock_calculations import minervini_scanner
 
 
 def save_200_150_50_MA_average():
