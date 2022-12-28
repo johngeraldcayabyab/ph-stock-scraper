@@ -48,3 +48,21 @@
 <li><a href="https://towardsdatascience.com/visualizing-stock-trading-agents-using-matplotlib-and-gym-584c992bc6d4">Visualizing stock trading</a></li>
 <li><a href="https://towardsdatascience.com/how-to-easily-run-python-visualizations-on-a-web-browser-with-pyscript-4b287ef991cd">How to Easily Run Python Visualizations On a Web Browser with PyScript</a></li>
 </ul>
+
+
+<h3>Violations Soon After a breakout</h3>
+<ul>
+<li>Low volume out of a base</li>
+<li>High volume back in three or four lower lows without supportive action</li>
+<li>More down days and up days</li>
+<li>More bad closes than good closes</li>
+<li>A close below the 20-day moving average</li>
+<li>A close below the 50-day moving average on heavy volume</li>
+<li>Full retracement of a good size gain</li>
+</ul>
+
+
+<h3>Buying rules</h3>
+<ul>
+<li>If you didn't get to purchase during a breakout, buy at confirmation pullback at 5 minute chart</li>
+</ul>
