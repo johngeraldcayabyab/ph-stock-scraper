@@ -1,12 +1,9 @@
 import math
 
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-from scipy import stats
-from sqlalchemy import create_engine
 from redis import Redis
 from rq import Queue
+from sqlalchemy import create_engine
 
 from db import test_connection
 from utils import chunk_df
