@@ -39,6 +39,7 @@
 <li>Create a stock ranking from minvervi scanner</li>
 <li>Create a linear regression on what will be the average up days if a stock matches minervinis scanner</li>
 <li>Different types of calculation must be made, a computation for all the SMAs, and RSI plus another one for the scoring list</li>
+<li>Possibility of linear regression and polynomial regression to predict the volume of trades in a certain day of the week/month</li>
 </ul>
 
 
