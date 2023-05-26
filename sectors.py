@@ -22,8 +22,9 @@ class Sector:
                 val.append((fetched_sector['cdId'], fetched_sector['cdNm']))
         val.append(("Undefined", "Undefined"))
         sql = "INSERT INTO sectors (cd_id, cd_name) VALUES (%s, %s)"
-        self.cursor.executemany(sql, val)
-        self.connection.commit()
+        if len(val):
+            self.cursor.executemany(sql, val)
+            self.connection.commit()
 
     def get_sectors_and_create_or_update(self):
         sectors = self.get_sectors()

@@ -14,6 +14,7 @@ class Company:
         total_pages = self.get_total_pages()
         val = []
         sectors = Sector().get_current_sectors()
+        current_company_symbols = self.get_current_company_symbols()
         for i in range(total_pages):
             page_no = i + 1
             companies = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', data={
@@ -39,19 +40,22 @@ class Company:
                     cm_detail = columns[0].find('a')['onclick'].replace('cmDetail(', '').replace(');return false;',
                                                                                                  '').split(
                         ',')
-                    name = columns[0].find('a').contents[0]
-                    symbol = columns[1].find('a').contents[0]
+                    name = columns[0].find('a').contents[0].strip()
+                    fetched_symbol = columns[1].find('a').contents[0].strip()
                     sector_name = columns[3].contents[0].strip()
                     sector_id = Sector().get_sector_id_by_name(sectors, sector_name)
-                    cmpy_id = cm_detail[0].replace("'", '')
-                    security_id = cm_detail[1].replace("'", '')
-                    listing_date = columns[4].contents[0]
+                    cmpy_id = cm_detail[0].replace("'", '').strip()
+                    security_id = cm_detail[1].replace("'", '').strip()
+                    listing_date = columns[4].contents[0].strip()
                     f = '%b %d, %Y'
                     listing_date = datetime.datetime.strptime(listing_date, f)
-                    val.append((name, symbol, cmpy_id, security_id, listing_date, sector_id))
-        sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date, sector_id) VALUES (%s, %s, %s, %s, %s, %s)"
-        self.cursor.executemany(sql, val)
-        self.connection.commit()
+                    if self.is_new_company(fetched_symbol, current_company_symbols):
+                        val.append((name, fetched_symbol, cmpy_id, security_id, listing_date, sector_id))
+
+        if len(val):
+            sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date, sector_id) VALUES (%s, %s, %s, %s, %s, %s)"
+            self.cursor.executemany(sql, val)
+            self.connection.commit()
 
     def get_total_pages(self):
         company_list = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', json={
@@ -67,3 +71,14 @@ class Company:
             if page.name == 'span':
                 total_pages += 1
         return total_pages
+
+    def is_new_company(self, fetched_company_symbol, company_symbols):
+        for company_symbol in company_symbols:
+            current_company_symbol = company_symbol[0]
+            if fetched_company_symbol == current_company_symbol:
+                return False
+        return True
+
+    def get_current_company_symbols(self):
+        self.cursor.execute("SELECT symbol FROM companies")
+        return self.cursor.fetchall()
