@@ -39,3 +39,11 @@ class Sector:
     def get_current_sectors(self):
         self.cursor.execute("SELECT id, cd_id FROM sectors")
         return self.cursor.fetchall()
+
+    def get_sector_id_by_name(self, sectors, sector_name):
+        for sector in sectors:
+            if (sector[1] == sector_name):
+                return sector[0]
+        self.cursor.execute("SELECT id FROM sectors where cd_id = 'Undefined'")
+        undefined_sector = self.cursor.fetchall()
+        return undefined_sector[0][0]

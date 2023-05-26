@@ -42,7 +42,7 @@ class Company:
                     name = columns[0].find('a').contents[0]
                     symbol = columns[1].find('a').contents[0]
                     sector_name = columns[3].contents[0].strip()
-                    sector_id = self.get_sector_id(sectors, sector_name)
+                    sector_id = Sector.get_sector_id_by_name(sectors, sector_name)
                     cmpy_id = cm_detail[0].replace("'", '')
                     security_id = cm_detail[1].replace("'", '')
                     listing_date = columns[4].contents[0]
@@ -52,14 +52,6 @@ class Company:
         sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date, sector_id) VALUES (%s, %s, %s, %s, %s, %s)"
         self.cursor.executemany(sql, val)
         self.connection.commit()
-
-    def get_sector_id(self, sectors, sector_name):
-        for sector in sectors:
-            if (sector[1] == sector_name):
-                return sector[0]
-        self.cursor.execute("SELECT id FROM sectors where cd_id = 'Undefined'")
-        undefined_sector = self.cursor.fetchall()
-        return undefined_sector[0][0]
 
     def get_total_pages(self):
         company_list = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', json={
