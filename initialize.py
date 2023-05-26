@@ -2,16 +2,17 @@ import requests
 from redis import Redis
 from rq import Queue
 from sectors import Sector
+from companies import Company
 
-from chart_data_scraper import scrap_and_insert_chart_data, insert_companies
 from db import test_connection
+
 
 class Initializer:
     def initialize(self):
         self.initialize_database()
         self.initialize_tables()
-        Sector().get_sectors_and_create_or_update()
-        # insert_companies()
+        # Sector().get_sectors_and_create_or_update()
+        # Company().insert_companies()
         print('initialization done')
 
     def initialize_database(self):
@@ -36,14 +37,14 @@ class Initializer:
         cursor = connection.cursor()
         cursor.execute(
             "CREATE TABLE sectors ("
-            " id INT AUTO_INCREMENT PRIMARY KEY,"
+            " id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
             " cd_id VARCHAR(255),"
             " cd_name VARCHAR(255),"
             " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
             ")")
         cursor.execute(
             "CREATE TABLE companies ("
-            " id INT AUTO_INCREMENT PRIMARY KEY,"
+            " id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
             " cmpy_id INT,"
             " security_id INT,"
             " name VARCHAR(255),"
@@ -53,7 +54,7 @@ class Initializer:
             ")")
         cursor.execute(
             "CREATE TABLE chart_data ("
-            " id INT AUTO_INCREMENT PRIMARY KEY,"
+            " id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
             " open DECIMAL(13,4),"
             " close DECIMAL(13,4),"
             " high DECIMAL(13,4),"
@@ -64,11 +65,12 @@ class Initializer:
             " sma_200 DECIMAL(13,4) NULL,"
             " rsi_14 DECIMAL(13,4) NULL,"
             " chart_date DATETIME,"
-            " company_id INT,"
+            " company_id INT UNSIGNED,"
             " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
             " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
             ")")
         connection.commit()
+
 
 # def get_all_chart_data():
 #     redis_conn = Redis('localhost', 6379)
@@ -93,3 +95,5 @@ class Initializer:
 # sectorClass.get_sectors_and_create_or_update()
 # insert_companies()
 # get_all_chart_data()
+
+Initializer().initialize()
