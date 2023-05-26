@@ -40,7 +40,8 @@ class Initializer:
             " id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
             " cd_id VARCHAR(255),"
             " cd_name VARCHAR(255),"
-            " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
+            " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+            " updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
             ")"
         )
         cursor.execute(
@@ -53,7 +54,8 @@ class Initializer:
             " listing_date DATETIME,"
             " sector_id INT UNSIGNED,"
             " CONSTRAINT fk_sectors FOREIGN KEY (sector_id) REFERENCES sectors(ID),"
-            " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
+            " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+            " updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
             ")"
         )
         cursor.execute(
@@ -71,7 +73,8 @@ class Initializer:
             " chart_date DATETIME,"
             " company_id INT UNSIGNED,"
             " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
-            " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
+            " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+            " updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
             ")"
         )
         connection.commit()
