@@ -42,7 +42,7 @@ class Company:
                     name = columns[0].find('a').contents[0]
                     symbol = columns[1].find('a').contents[0]
                     sector_name = columns[3].contents[0].strip()
-                    sector_id = Sector.get_sector_id_by_name(sectors, sector_name)
+                    sector_id = Sector().get_sector_id_by_name(sectors, sector_name)
                     cmpy_id = cm_detail[0].replace("'", '')
                     security_id = cm_detail[1].replace("'", '')
                     listing_date = columns[4].contents[0]
