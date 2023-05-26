@@ -11,8 +11,8 @@ class Initializer:
     def initialize(self):
         self.initialize_database()
         self.initialize_tables()
-        # Sector().get_sectors_and_create_or_update()
-        # Company().insert_companies()
+        Sector().get_sectors_and_create_or_update()
+        Company().insert_companies()
         print('initialization done')
 
     def initialize_database(self):

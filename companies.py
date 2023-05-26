@@ -1,16 +1,20 @@
 import datetime
-
 import requests
 from bs4 import BeautifulSoup
-
 from db import test_connection
-from utils import date_today
+from sectors import Sector
+
 
 class Company:
+    def __init__(self):
+        self.connection = test_connection()
+        self.cursor = self.connection.cursor()
+
     def insert_companies(self):
-        connection = test_connection()
-        cursor = connection.cursor()
-        for i in range(self.get_total_pages()):
+        total_pages = self.get_total_pages()
+        val = []
+        sectors = Sector().get_current_sectors()
+        for i in range(total_pages):
             page_no = i + 1
             companies = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', data={
                 'pageNo': page_no,
@@ -37,23 +41,25 @@ class Company:
                         ',')
                     name = columns[0].find('a').contents[0]
                     symbol = columns[1].find('a').contents[0]
+                    sector_name = columns[3].contents[0].strip()
+                    sector_id = self.get_sector_id(sectors, sector_name)
                     cmpy_id = cm_detail[0].replace("'", '')
                     security_id = cm_detail[1].replace("'", '')
                     listing_date = columns[4].contents[0]
                     f = '%b %d, %Y'
                     listing_date = datetime.datetime.strptime(listing_date, f)
-                    # sql = "SELECT cmpy_id, COUNT(*) FROM companies WHERE cmpy_id = %s AND security_id = %s GROUP BY cmpy_id, security_id"
-                    # val = (cmpy_id, security_id,)
-                    # cursor.execute(sql, val)
-                    # cursor.fetchall()
-                    # row_count = cursor.rowcount
-                    # if row_count == 0:
-                    #     print("It Does Not Exist")
-                    sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date) VALUES (%s, %s, %s, %s, %s)"
-                    val = (name, symbol, cmpy_id, security_id, listing_date)
-                    cursor.execute(sql, val)
+                    val.append((name, symbol, cmpy_id, security_id, listing_date, sector_id))
+        sql = "INSERT INTO companies (name, symbol, cmpy_id, security_id, listing_date, sector_id) VALUES (%s, %s, %s, %s, %s, %s)"
+        self.cursor.executemany(sql, val)
+        self.connection.commit()
 
-        connection.commit()
+    def get_sector_id(self, sectors, sector_name):
+        for sector in sectors:
+            if (sector[1] == sector_name):
+                return sector[0]
+        self.cursor.execute("SELECT id FROM sectors where cd_id = 'Undefined'")
+        undefined_sector = self.cursor.fetchall()
+        return undefined_sector[0][0]
 
     def get_total_pages(self):
         company_list = requests.post('https://edge.pse.com.ph/companyDirectory/search.ax', json={
