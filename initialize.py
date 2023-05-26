@@ -36,24 +36,28 @@ class Initializer:
         connection = test_connection()
         cursor = connection.cursor()
         cursor.execute(
-            "CREATE TABLE sectors ("
+            " CREATE TABLE sectors ("
             " id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
             " cd_id VARCHAR(255),"
             " cd_name VARCHAR(255),"
             " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
-            ")")
+            ")"
+        )
         cursor.execute(
-            "CREATE TABLE companies ("
+            " CREATE TABLE companies ("
             " id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
             " cmpy_id INT,"
             " security_id INT,"
             " name VARCHAR(255),"
             " symbol VARCHAR(255),"
             " listing_date DATETIME,"
+            " sector_id INT UNSIGNED,"
+            " CONSTRAINT fk_sectors FOREIGN KEY (sector_id) REFERENCES sectors(ID),"
             " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
-            ")")
+            ")"
+        )
         cursor.execute(
-            "CREATE TABLE chart_data ("
+            " CREATE TABLE chart_data ("
             " id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
             " open DECIMAL(13,4),"
             " close DECIMAL(13,4),"
@@ -68,7 +72,8 @@ class Initializer:
             " company_id INT UNSIGNED,"
             " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
             " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
-            ")")
+            ")"
+        )
         connection.commit()
 
 
