@@ -82,7 +82,7 @@ def minervini_scanner(company_id, with_chart=False):
     # print(total_days)
     # print(len(total_days))
 
-    print(df)
+    # print(df)
 
     if with_chart:
         plt.plot(df['close'], 'k-', label='Original')

@@ -3,6 +3,7 @@ from rq import Queue
 
 from chart_data_scraper import scrap_and_insert_chart_data, date_today
 from db import test_connection
+from scanner import minervini_scanner
 from stock_calculations import calculate_rsi, calculate_sma
 from utils import yesterday
 
@@ -44,6 +45,7 @@ def compute_all_chart_data():
             company_id=company_id,
         )
 
+# get_all_chart_data()
 
 # calculate_rsi(169)
 # calculate_sma(169)
@@ -52,7 +54,7 @@ def compute_all_chart_data():
 # insert_companies()
 # get_all_chart_data('12-23-2022', yesterday())
 # get_all_chart_data('01-05-2023', '05-18-2023')
-# minervini_scanner(159, with_chart=True)
+minervini_scanner(22, with_chart=True)
 # print((date.today() - timedelta(days=1)).strftime("%m-%d-%Y"))
 
-compute_all_chart_data()
+# compute_all_chart_data()

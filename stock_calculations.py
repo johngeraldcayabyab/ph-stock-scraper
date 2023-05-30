@@ -1,4 +1,5 @@
 import math
+import time
 
 import pandas as pd
 from redis import Redis
@@ -12,8 +13,9 @@ from utils import chunk_df
 def update_chart_data_sma(chunked):
     connection = test_connection()
     cursor = connection.cursor()
-    sql = "UPDATE chart_data SET sma_200 = %s, sma_150 = %s, sma_50 = %s WHERE id = %s "
+    sql = "UPDATE chart_data SET sma_200 = %s, sma_150 = %s, sma_50 = %s, updated_at = %s WHERE id = %s "
     values = []
+    time_now = time.strftime('%Y-%m-%d %H:%M:%S')
     for row in chunked.itertuples():
         sma_200 = row.sma_200
         sma_150 = row.sma_150
@@ -28,6 +30,7 @@ def update_chart_data_sma(chunked):
             sma_200,
             sma_150,
             sma_50,
+            time_now,
             row.id
         ))
     cursor.executemany(sql, values)
@@ -37,14 +40,16 @@ def update_chart_data_sma(chunked):
 def update_chart_data_rsi(chunked):
     connection = test_connection()
     cursor = connection.cursor()
-    sql = "UPDATE chart_data SET rsi_14 = %s WHERE id = %s "
+    sql = "UPDATE chart_data SET rsi_14 = %s, updated_at = %s WHERE id = %s "
     values = []
+    time_now = time.strftime('%Y-%m-%d %H:%M:%S')
     for row in chunked.itertuples():
         rsi_14 = row.rsi_14
         if math.isnan(rsi_14):
             rsi_14 = None
         values.append((
             rsi_14,
+            time_now,
             row.id
         ))
     cursor.executemany(sql, values)
