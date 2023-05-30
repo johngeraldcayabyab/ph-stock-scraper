@@ -61,6 +61,7 @@ class Initializer:
         cursor.execute(
             " CREATE TABLE chart_data ("
             " id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
+            " uuid INT UNSIGNED,"
             " open DECIMAL(13,4),"
             " close DECIMAL(13,4),"
             " high DECIMAL(13,4),"
@@ -74,7 +75,8 @@ class Initializer:
             " company_id INT UNSIGNED,"
             " CONSTRAINT fk_companies FOREIGN KEY (company_id) REFERENCES companies(ID),"
             " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-            " updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
+            " updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+            " UNIQUE (uuid)"
             ")"
         )
         connection.commit()
