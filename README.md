@@ -17,7 +17,7 @@
 <ul>
 <li>Mysql</li>
 <li>Redis</li>
-<li>run rqworker on root</li>
+<li><b>run rqworker on root</b></li>
 </ul>
 
 
