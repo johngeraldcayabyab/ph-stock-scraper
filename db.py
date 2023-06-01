@@ -12,6 +12,7 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 class Db:
     def __init__(self):
+        pass
         self.connection = self.test_connection()
         self.cursor = self.connection.cursor()
 
