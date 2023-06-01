@@ -24,8 +24,6 @@ def scrap_and_insert_chart_data(company_id, cmpy_id, security_id, start_date=dat
     for uuidList in uuidsList:
         uuids.append(uuidList[0])
 
-    print(chart_data)
-
     for data in chart_data:
         f = '%b %d, %Y %H:%M:%S'
         chart_date = datetime.datetime.strptime(data['CHART_DATE'], f)
