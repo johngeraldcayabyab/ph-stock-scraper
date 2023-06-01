@@ -1,7 +1,7 @@
 from redis import Redis
 from rq import Queue
 
-from chart_data_scraper import scrap_and_insert_chart_data
+from chart_data_scraper import Scraper
 from companies import Company
 from db import test_connection
 from sectors import Sector
@@ -93,7 +93,7 @@ class Initializer:
 
         for company in companies:
             q.enqueue(
-                scrap_and_insert_chart_data,
+                Scraper().scrap_and_insert_chart_data,
                 cmpy_id=company[1],
                 security_id=company[2],
                 start_date=company[5].strftime("%m-%d-%Y"),
