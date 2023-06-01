@@ -1,12 +1,15 @@
 import datetime
-
 import requests
 from bs4 import BeautifulSoup
-from db import Db
+from db import test_connection
 from sectors import Sector
 
 
-class Company(Db):
+class Company:
+    def __init__(self):
+        self.connection = test_connection()
+        self.cursor = self.connection.cursor()
+
     def insert_companies(self):
         total_pages = self.get_total_pages()
         val = []
@@ -78,8 +81,4 @@ class Company(Db):
 
     def get_current_company_symbols(self):
         self.cursor.execute("SELECT symbol FROM companies")
-        return self.cursor.fetchall()
-
-    def get_all_companies(self):
-        self.cursor.execute("SELECT * FROM companies")
         return self.cursor.fetchall()

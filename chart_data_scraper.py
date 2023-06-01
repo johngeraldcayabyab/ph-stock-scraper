@@ -1,12 +1,14 @@
 import datetime
 import requests
-from db import Db
+from db import test_connection
 from utils import date_today
 
 
-class Scraper(Db):
+class Scraper:
     def scrap_and_insert_chart_data(self, company_id, cmpy_id, security_id, start_date=date_today(),
                                     end_date=date_today()):
+        connection = test_connection()
+        cursor = connection.cursor()
         response = requests.post('https://edge.pse.com.ph/common/DisclosureCht.ax', json={
             "cmpy_id": cmpy_id,
             "security_id": security_id,
@@ -30,9 +32,5 @@ class Scraper(Db):
             values.append((uuid, open_price, close, high, low, volume, chart_date, company_id))
         unique_values = list(set(map(tuple, values)))
         sql = "INSERT INTO chart_data (uuid, open, close, high, low, volume, chart_date, company_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        self.cursor.executemany(sql, unique_values)
-        self.connection.commit()
-
-    def get_company_chart_data(self, company_id):
-        self.cursor.execute("SELECT symbol FROM companies")
-        return self.cursor.fetchall()
+        cursor.executemany(sql, unique_values)
+        connection.commit()

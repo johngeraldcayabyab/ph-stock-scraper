@@ -1,8 +1,12 @@
 import requests
-from db import Db
+from db import test_connection
 
 
-class Sector(Db):
+class Sector:
+    def __init__(self):
+        self.connection = test_connection()
+        self.cursor = self.connection.cursor()
+
     def get_sectors(self):
         return requests.post('https://edge.pse.com.ph/common/chgSector.ax', json={"idxId": ""}, headers={
             'Content-type': 'application/json',
