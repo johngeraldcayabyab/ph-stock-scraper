@@ -6,7 +6,7 @@ from db import Db
 from sectors import Sector
 
 
-class Company(Db):
+class CompanyTest(Db):
     def insert_companies(self):
         total_pages = self.get_total_pages()
         val = []

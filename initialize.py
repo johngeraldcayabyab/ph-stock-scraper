@@ -2,7 +2,7 @@ from redis import Redis
 from rq import Queue
 
 from chart_data_scraper import scrap_and_insert_chart_data
-from companies import Company
+from companies_test import CompanyTest
 from db import test_connection
 from sectors import Sector
 
@@ -12,7 +12,7 @@ class Initializer:
         self.initialize_database()
         self.initialize_tables()
         Sector().get_sectors_and_create_or_update()
-        Company().insert_companies()
+        CompanyTest().insert_companies()
         self.get_all_chart_data()
         print('initialization done')
 

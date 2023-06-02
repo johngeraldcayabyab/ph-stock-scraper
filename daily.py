@@ -2,7 +2,7 @@ from redis import Redis
 from rq import Queue
 
 from chart_data_scraper import scrap_and_insert_chart_data
-from companies import Company
+from companies_test import CompanyTest
 from scanner import minervini_scanner
 from stock_calculations import calculate_rsi, calculate_sma
 from utils import yesterday, date_today
@@ -11,7 +11,7 @@ from utils import yesterday, date_today
 def get_all_chart_data(start_date=date_today(), end_date=date_today()):
     redis_conn = Redis('localhost', 6379)
     scraper_queue = Queue(connection=redis_conn, name='scrap_and_insert_chart_data')
-    companies = Company().get_all_companies()
+    companies = CompanyTest().get_all_companies()
     for company in companies:
         scraper_queue.enqueue(
             scrap_and_insert_chart_data,
@@ -27,7 +27,7 @@ def compute_all_chart_data():
     rsi_queue = Queue(connection=redis_conn, name='calculate_rsi')
     sma_queue = Queue(connection=redis_conn, name='calculate_sma')
 
-    companies = Company().get_all_companies()
+    companies = CompanyTest().get_all_companies()
     for index, company in enumerate(companies):
         company_id = company[0]
         rsi_queue.enqueue(
